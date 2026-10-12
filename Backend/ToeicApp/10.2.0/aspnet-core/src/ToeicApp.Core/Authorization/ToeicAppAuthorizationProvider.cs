@@ -12,6 +12,7 @@ public class ToeicAppAuthorizationProvider : AuthorizationProvider
         context.CreatePermission(PermissionNames.Pages_Users_Activation, L("UsersActivation"));
         context.CreatePermission(PermissionNames.Pages_Roles, L("Roles"));
         context.CreatePermission(PermissionNames.Pages_Tenants, L("Tenants"), multiTenancySides: MultiTenancySides.Host);
+        context.CreatePermission(PermissionNames.Pages_Exams_Manage, L("ExamManagement"));
     }
 
     private static ILocalizableString L(string name)

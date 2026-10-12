@@ -1,411 +1,211 @@
-﻿@using ToeicApp.Web.Startup
+﻿@using System.Globalization
+@using ToeicApp.Web.Startup
+@using ToeicApp.Web.Models
+@model HomeDashboardViewModel
 @{
-    ViewBag.Title = L("HomePage");
+    ViewBag.Title = "Tổng quan";
     ViewBag.CurrentPageName = PageNames.Home;
+    var updatedAt = DateTime.Now.ToString("HH:mm · dd/MM/yyyy", CultureInfo.GetCultureInfo("vi-VN"));
 }
+
+<section class="console-page">
+    <div class="console-page-heading">
+        <div>
+            <h1>Tổng quan</h1>
+            <p>Theo dõi kho đề TOEIC Reading và hoạt động làm bài của học viên.</p>
+        </div>
+        <a class="console-button console-button-primary" href="@Url.Action("Index", "Exams", new { import = true })">
+            <img src="~/img/admin/upload-alt.svg" alt="" />
+            <span>Import đề thi</span>
+        </a>
+    </div>
+
+    <div class="console-stat-grid">
+        <article class="console-stat-card">
+            <div class="console-stat-label">
+                <span>Tổng số đề thi</span>
+                <img src="~/img/admin/files-alt.svg" alt="" />
+            </div>
+            <strong>@Model.TotalExams</strong>
+            <span class="console-stat-caption">@Model.PublishedExams đã xuất bản · @Model.DraftExams bản nháp</span>
+        </article>
+        <article class="console-stat-card">
+            <div class="console-stat-label">
+                <span>Đề đã xuất bản</span>
+                <img src="~/img/admin/circle-check.svg" alt="" />
+            </div>
+            <strong>@Model.PublishedExams</strong>
+            <span class="console-stat-caption">Sẵn sàng cho học viên làm bài</span>
+        </article>
+        <article class="console-stat-card">
+            <div class="console-stat-label">
+                <span>Đề bản nháp</span>
+                <img src="~/img/admin/file-pen-line.svg" alt="" />
+            </div>
+            <strong>@Model.DraftExams</strong>
+            <span class="console-stat-caption">Tiếp tục hoàn thiện trước khi xuất bản</span>
+        </article>
+        <article class="console-stat-card" id="attempts-summary">
+            <div class="console-stat-label">
+                <span>Lượt làm bài</span>
+                <img src="~/img/admin/users.svg" alt="" />
+            </div>
+            <strong>@Model.TotalAttempts.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"))</strong>
+            <span class="console-stat-caption console-stat-caption-positive">+@Model.RecentAttempts lượt trong 7 ngày qua</span>
+        </article>
+    </div>
+
+    <section class="console-section">
+        <div class="console-section-heading">
+            <h2>Đề thi gần đây</h2>
+            <span>Cập nhật lúc @updatedAt</span>
+        </div>
+        <div class="console-table-card">
+            <div class="console-table-scroll">
+                <table class="console-table">
+                    <thead>
+                        <tr>
+                            <th class="console-exam-name-column">Tên đề thi</th>
+                            <th>Số câu</th>
+                            <th>Thời gian</th>
+                            <th>Trạng thái</th>
+                            <th>Ngày tạo</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.RecentExams.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="6" class="console-empty-cell">
+                                    Chưa có đề thi. Import file Word để bắt đầu tạo đề mới.
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var exam in Model.RecentExams)
+                            {
+                                <tr>
+                                    <td class="console-exam-name-column">
+                                        <a class="console-exam-title" href="@Url.Action("Preview", "Exams", new { id = exam.Id })">@exam.Title</a>
+                                        <span class="console-exam-subtitle">Đề @exam.Id.ToString("D2") · Reading · Part 5, 6, 7</span>
+                                    </td>
+                                    <td>@exam.TotalQuestions</td>
+                                    <td>@exam.DurationMinutes phút</td>
+                                    <td>
+                                        @if (exam.IsPublished)
+                                        {
+                                            <span class="console-status console-status-published"><i></i>Đã xuất bản</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="console-status console-status-draft"><i></i>Bản nháp</span>
+                                        }
+                                    </td>
+                                    <td class="console-date-cell">
+                                        <span>@exam.CreationTime.ToLocalTime().ToString("dd/MM/yyyy")</span>
+                                        <small>@exam.CreationTime.ToLocalTime().ToString("HH:mm")</small>
+                                    </td>
+                                    <td>
+                                        <div class="console-row-actions">
+                                            <a class="console-icon-button" href="@Url.Action("Preview", "Exams", new { id = exam.Id })" title="Xem và chỉnh sửa đề thi" aria-label="Xem và chỉnh sửa đề thi">
+                                                <img src="~/img/admin/eye.svg" alt="" />
+                                            </a>
+                                            <button class="console-icon-button btn-toggle-publish" type="button" data-id="@exam.Id" data-published="@(exam.IsPublished ? "true" : "false")" title="@(exam.IsPublished ? "Gỡ xuất bản" : "Xuất bản")" aria-label="@(exam.IsPublished ? "Gỡ xuất bản" : "Xuất bản")">
+                                                <img src="@(exam.IsPublished ? Url.Content("~/img/admin/send-muted.svg") : Url.Content("~/img/admin/send.svg"))" alt="" />
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="console-table-footer">
+                <span>Hiển thị @Model.RecentExams.Count đề được cập nhật gần nhất</span>
+                <a href="@Url.Action("Index", "Exams")">Xem tất cả đề thi <span aria-hidden="true">→</span></a>
+            </div>
+        </div>
+    </section>
+
+    <div class="console-workspace-grid">
+        <section class="console-work-card">
+            <h2><img src="~/img/admin/file-pen-line-alt.svg" alt="" />Tiếp tục hoàn thiện đề thi</h2>
+            @if (Model.LatestDraft == null)
+            {
+                <div class="console-work-card-content">
+                    <div>
+                        <strong>Không có đề bản nháp</strong>
+                        <span>Tạo đề mới bằng cách import tài liệu Word.</span>
+                    </div>
+                    <a class="console-button console-button-outline" href="@Url.Action("Index", "Exams", new { import = true })">
+                        <img src="~/img/admin/arrow-right.svg" alt="" />
+                        <span>Tạo đề mới</span>
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="console-work-card-content">
+                    <div>
+                        <strong>@Model.LatestDraft.Title</strong>
+                        <span>@Model.LatestDraft.TotalQuestions câu · @Model.LatestDraft.DurationMinutes phút · Bản nháp tạo lúc @Model.LatestDraft.CreationTime.ToLocalTime().ToString("HH:mm")</span>
+                    </div>
+                    <a class="console-button console-button-outline" href="@Url.Action("Preview", "Exams", new { id = Model.LatestDraft.Id })">
+                        <img src="~/img/admin/arrow-right.svg" alt="" />
+                        <span>Mở chỉnh sửa</span>
+                    </a>
+                </div>
+            }
+        </section>
+        <aside class="console-work-card console-publish-note">
+            <span class="console-status console-status-published"><i></i>Kiểm tra trước xuất bản</span>
+            <p>Chỉ xuất bản đề đủ 100 câu, 4 lựa chọn và 1 đáp án đúng cho mỗi câu.</p>
+            <span>Part 5: 30 · Part 6: 16 · Part 7: 54</span>
+        </aside>
+    </div>
+</section>
 
 @section scripts
 {
-    <script src="~/view-resources/Views/_Bundles/home-index.min.js" asp-append-version="true"></script>
-}
+    <script>
+        $(function () {
+            $('.btn-toggle-publish').on('click', function () {
+                var button = $(this);
+                var examId = button.data('id');
+                var isPublished = button.data('published') === true || button.data('published') === 'true';
+                var nextState = !isPublished;
+                var action = nextState ? 'xuất bản' : 'gỡ xuất bản';
 
-<div class="content-header">
-    <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-12">
-                <h1 class="m-0 text-dark">@L("HomePage")</h1>
-            </div>
-        </div>
-    </div>
-</div>
-<section class="content">
-<div class="container-fluid">
-<div class="row">
-    <div class="col-12">
-        <div class="alert alert-info alert-dismissible">
-            <h6><i class="icon fa fa-info"></i> This is a sample Dashboard which doesn't show any server side data. However, you can develop your own dashboard inspired by this one and its source code.</h6>
-        </div>
-    </div>
-</div>
-<!-- Info boxes -->
-<div class="row">
-    <div class="col-12 col-sm-6 col-md-3">
-        <div class="info-box">
-            <span class="info-box-icon bg-info elevation-1">
-                <i class="fas fa-cog"></i>
-            </span>
-            <div class="info-box-content">
-                <span class="info-box-text">CPU Traffic</span>
-                <span class="info-box-number">
-                    10
-                    <small>%</small>
-                </span>
-            </div>
-            <!-- /.info-box-content -->
-        </div>
-        <!-- /.info-box -->
-    </div>
-    <!-- /.col -->
-    <div class="col-12 col-sm-6 col-md-3">
-        <div class="info-box mb-3">
-            <span class="info-box-icon bg-danger elevation-1">
-                <i class="fas fa-thumbs-up"></i>
-            </span>
-            <div class="info-box-content">
-                <span class="info-box-text">Likes</span>
-                <span class="info-box-number">41,410</span>
-            </div>
-            <!-- /.info-box-content -->
-        </div>
-        <!-- /.info-box -->
-    </div>
-    <!-- /.col -->
-    <!-- fix for small devices only -->
-    <div class="clearfix hidden-md-up"></div>
-    <div class="col-12 col-sm-6 col-md-3">
-        <div class="info-box mb-3">
-            <span class="info-box-icon bg-success elevation-1">
-                <i class="fas fa-shopping-cart"></i>
-            </span>
-            <div class="info-box-content">
-                <span class="info-box-text">Sales</span>
-                <span class="info-box-number">760</span>
-            </div>
-            <!-- /.info-box-content -->
-        </div>
-        <!-- /.info-box -->
-    </div>
-    <!-- /.col -->
-    <div class="col-12 col-sm-6 col-md-3">
-        <div class="info-box mb-3">
-            <span class="info-box-icon bg-warning elevation-1">
-                <i class="fas fa-users"></i>
-            </span>
-            <div class="info-box-content">
-                <span class="info-box-text">New Members</span>
-                <span class="info-box-number">2,000</span>
-            </div>
-            <!-- /.info-box-content -->
-        </div>
-        <!-- /.info-box -->
-    </div>
-    <!-- /.col -->
-</div>
-<!-- /.row -->
-<div class="row">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title">Monthly Recap Report</h5>
-                <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                        <i class="fas fa-minus"></i>
-                    </button>
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-tool dropdown-toggle" data-bs-toggle="dropdown">
-                            <i class="fas fa-wrench"></i>
-                        </button>
-                        <div class="dropdown-menu dropdown-menu-right" role="menu">
-                            <a href="#" class="dropdown-item">Action</a>
-                            <a href="#" class="dropdown-item">Another action</a>
-                            <a href="#" class="dropdown-item">Something else here</a>
-                            <a class="dropdown-divider"></a>
-                            <a href="#" class="dropdown-item">Separated link</a>
-                        </div>
-                    </div>
-                    <button type="button" class="btn btn-tool" data-card-widget="remove">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            </div>
-            <!-- /.card-header -->
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-8">
-                        <p class="text-center">
-                            <strong>Sales: 1 Jan, 2014 - 30 Jul, 2014</strong>
-                        </p>
-                        <div class="chart">
-                            <div class="chartjs-size-monitor">
-                                <div class="chartjs-size-monitor-expand">
-                                    <div class=""></div>
-                                </div>
-                                <div class="chartjs-size-monitor-shrink">
-                                    <div class=""></div>
-                                </div>
-                            </div>
-                            <!-- Sales Chart Canvas -->
-                            <canvas id="salesChart" height="360" style="height: 180px; display: block; width: 730px;" width="1460" class="chartjs-render-monitor"></canvas>
-                        </div>
-                        <!-- /.chart-responsive -->
-                    </div>
-                    <!-- /.col -->
-                    <div class="col-md-4">
-                        <p class="text-center">
-                            <strong>Goal Completion</strong>
-                        </p>
-                        <div class="progress-group">
-                            Add Products to Cart
-                            <span class="float-right"><b>160</b>/200</span>
-                            <div class="progress progress-sm">
-                                <div class="progress-bar bg-primary" style="width: 80%"></div>
-                            </div>
-                        </div>
-                        <!-- /.progress-group -->
-                        <div class="progress-group">
-                            Complete Purchase
-                            <span class="float-right"><b>310</b>/400</span>
-                            <div class="progress progress-sm">
-                                <div class="progress-bar bg-danger" style="width: 75%"></div>
-                            </div>
-                        </div>
-                        <!-- /.progress-group -->
-                        <div class="progress-group">
-                            <span class="progress-text">Visit Premium Page</span>
-                            <span class="float-right"><b>480</b>/800</span>
-                            <div class="progress progress-sm">
-                                <div class="progress-bar bg-success" style="width: 60%"></div>
-                            </div>
-                        </div>
-                        <!-- /.progress-group -->
-                        <div class="progress-group">
-                            Send Inquiries
-                            <span class="float-right"><b>250</b>/500</span>
-                            <div class="progress progress-sm">
-                                <div class="progress-bar bg-warning" style="width: 50%"></div>
-                            </div>
-                        </div>
-                        <!-- /.progress-group -->
-                    </div>
-                    <!-- /.col -->
-                </div>
-                <!-- /.row -->
-            </div>
-            <!-- ./card-body -->
-            <div class="card-footer">
-                <div class="row">
-                    <div class="col-sm-3 col-6">
-                        <div class="description-block border-right">
-                            <span class="description-percentage text-success"><i class="fas fa-caret-up"></i> 17%</span>
-                            <h5 class="description-header">$35,210.43</h5>
-                            <span class="description-text">TOTAL REVENUE</span>
-                        </div>
-                        <!-- /.description-block -->
-                    </div>
-                    <!-- /.col -->
-                    <div class="col-sm-3 col-6">
-                        <div class="description-block border-right">
-                            <span class="description-percentage text-warning"><i class="fas fa-caret-left"></i> 0%</span>
-                            <h5 class="description-header">$10,390.90</h5>
-                            <span class="description-text">TOTAL COST</span>
-                        </div>
-                        <!-- /.description-block -->
-                    </div>
-                    <!-- /.col -->
-                    <div class="col-sm-3 col-6">
-                        <div class="description-block border-right">
-                            <span class="description-percentage text-success"><i class="fas fa-caret-up"></i> 20%</span>
-                            <h5 class="description-header">$24,813.53</h5>
-                            <span class="description-text">TOTAL PROFIT</span>
-                        </div>
-                        <!-- /.description-block -->
-                    </div>
-                    <!-- /.col -->
-                    <div class="col-sm-3 col-6">
-                        <div class="description-block">
-                            <span class="description-percentage text-danger"><i class="fas fa-caret-down"></i> 18%</span>
-                            <h5 class="description-header">1200</h5>
-                            <span class="description-text">GOAL COMPLETIONS</span>
-                        </div>
-                        <!-- /.description-block -->
-                    </div>
-                </div>
-                <!-- /.row -->
-            </div>
-            <!-- /.card-footer -->
-        </div>
-        <!-- /.card -->
-    </div>
-    <!-- /.col -->
-</div>
-<!-- /.row -->
-<!-- Main row -->
-<div class="row">
-    <!-- Left col -->
-    <div class="col-md-8">
-        <!-- TABLE: LATEST ORDERS -->
-        <div class="card">
-            <div class="card-header border-transparent">
-                <h3 class="card-title">Latest Orders</h3>
-                <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                        <i class="fas fa-minus"></i>
-                    </button>
-                    <button type="button" class="btn btn-tool" data-card-widget="remove">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            </div>
-            <!-- /.card-header -->
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table m-0">
-                        <thead>
-                        <tr>
-                            <th>Order ID</th>
-                            <th>Item</th>
-                            <th>Status</th>
-                            <th>Popularity</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td>
-                                <a href="javascript:;">OR9842</a>
-                            </td>
-                            <td>Call of Duty IV</td>
-                            <td>
-                                <span class="badge badge-success">Shipped</span>
-                            </td>
-                            <td>
-                                <div class="sparkbar" data-color="#00a65a" data-height="20">90,80,90,-70,61,-83,63</div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <a href="javascript:;">OR1848</a>
-                            </td>
-                            <td>Samsung Smart TV</td>
-                            <td>
-                                <span class="badge badge-warning">Pending</span>
-                            </td>
-                            <td>
-                                <div class="sparkbar" data-color="#f39c12" data-height="20">90,80,-90,70,61,-83,68</div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <a href="javascript:;">OR7429</a>
-                            </td>
-                            <td>iPhone 6 Plus</td>
-                            <td>
-                                <span class="badge badge-danger">Delivered</span>
-                            </td>
-                            <td>
-                                <div class="sparkbar" data-color="#f56954" data-height="20">90,-80,90,70,-61,83,63</div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <a href="javascript:;">OR7429</a>
-                            </td>
-                            <td>Samsung Smart TV</td>
-                            <td>
-                                <span class="badge badge-info">Processing</span>
-                            </td>
-                            <td>
-                                <div class="sparkbar" data-color="#00c0ef" data-height="20">90,80,-90,70,-61,83,63</div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <a href="javascript:;">OR1848</a>
-                            </td>
-                            <td>Samsung Smart TV</td>
-                            <td>
-                                <span class="badge badge-warning">Pending</span>
-                            </td>
-                            <td>
-                                <div class="sparkbar" data-color="#f39c12" data-height="20">90,80,-90,70,61,-83,68</div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <a href="javascript:;">OR7429</a>
-                            </td>
-                            <td>iPhone 6 Plus</td>
-                            <td>
-                                <span class="badge badge-danger">Delivered</span>
-                            </td>
-                            <td>
-                                <div class="sparkbar" data-color="#f56954" data-height="20">90,-80,90,70,-61,83,63</div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <a href="javascript:;">OR9842</a>
-                            </td>
-                            <td>Call of Duty IV</td>
-                            <td>
-                                <span class="badge badge-success">Shipped</span>
-                            </td>
-                            <td>
-                                <div class="sparkbar" data-color="#00a65a" data-height="20">90,80,90,-70,61,-83,63</div>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <!-- /.table-responsive -->
-            </div>
-            <!-- /.card-body -->
-            <div class="card-footer clearfix">
-                <a href="javascript:void(0)" class="btn btn-sm btn-info float-left">Place New Order</a>
-                <a href="javascript:void(0)" class="btn btn-sm btn-secondary float-right">View All Orders</a>
-            </div>
-            <!-- /.card-footer -->
-        </div>
-        <!-- /.card -->
-    </div>
-    <!-- /.col -->
-    <div class="col-md-4">
-        <!-- Info Boxes Style 2 -->
-        <div class="info-box mb-3 bg-warning">
-            <span class="info-box-icon">
-                <i class="fas fa-tag"></i>
-            </span>
-            <div class="info-box-content">
-                <span class="info-box-text">Inventory</span>
-                <span class="info-box-number">5,200</span>
-            </div>
-            <!-- /.info-box-content -->
-        </div>
-        <!-- /.info-box -->
-        <div class="info-box mb-3 bg-success">
-            <span class="info-box-icon">
-                <i class="fas fa-heart"></i>
-            </span>
-            <div class="info-box-content">
-                <span class="info-box-text">Mentions</span>
-                <span class="info-box-number">92,050</span>
-            </div>
-            <!-- /.info-box-content -->
-        </div>
-        <!-- /.info-box -->
-        <div class="info-box mb-3 bg-danger">
-            <span class="info-box-icon">
-                <i class="fas fa-cloud-download-alt"></i>
-            </span>
-            <div class="info-box-content">
-                <span class="info-box-text">Downloads</span>
-                <span class="info-box-number">114,381</span>
-            </div>
-            <!-- /.info-box-content -->
-        </div>
-        <!-- /.info-box -->
-        <div class="info-box mb-3 bg-info">
-            <span class="info-box-icon">
-                <i class="fas fa-comment"></i>
-            </span>
-            <div class="info-box-content">
-                <span class="info-box-text">Direct Messages</span>
-                <span class="info-box-number">163,921</span>
-            </div>
-            <!-- /.info-box-content -->
-        </div>
-    </div>
-    <!-- /.col -->
-</div>
-<!-- /.row -->
-</div>
-</section>
+                abp.message.confirm('Bạn có chắc chắn muốn ' + action + ' đề thi này?', 'Xác nhận', function (confirmed) {
+                    if (!confirmed) {
+                        return;
+                    }
+
+                    abp.ui.setBusy();
+                    $.ajax({
+                        url: '@Url.Action("SetPublished", "Exams")',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ id: examId, isPublished: nextState }),
+                        success: function (response) {
+                            abp.ui.clearBusy();
+                            if (response.success) {
+                                abp.notify.success('Cập nhật trạng thái đề thi thành công.');
+                                window.location.reload();
+                            } else {
+                                abp.message.error(response.message || 'Không thể cập nhật trạng thái đề thi.');
+                            }
+                        },
+                        error: function () {
+                            abp.ui.clearBusy();
+                            abp.message.error('Không thể kết nối đến máy chủ.');
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+}

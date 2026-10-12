@@ -1,4 +1,4 @@
-﻿using Abp.Application.Navigation;
+using Abp.Application.Navigation;
 using Abp.Authorization;
 using Abp.Localization;
 using ToeicApp.Authorization;
@@ -52,6 +52,14 @@ public class ToeicAppNavigationProvider : NavigationProvider
                     url: "Roles",
                     icon: "fas fa-theater-masks",
                     permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Roles)
+                )
+            ).AddItem(
+                new MenuItemDefinition(
+                    PageNames.Exams,
+                    L("Exams"),
+                    url: "Exams",
+                    icon: "fas fa-file-alt",
+                    permissionDependency: new SimplePermissionDependency(PermissionNames.Pages_Exams_Manage)
                 )
             )
             .AddItem( // Menu items below is just for demonstration!

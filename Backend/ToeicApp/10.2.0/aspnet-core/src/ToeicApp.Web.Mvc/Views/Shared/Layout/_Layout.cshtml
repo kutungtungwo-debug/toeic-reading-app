@@ -1,4 +1,6 @@
-﻿@using Abp.Configuration.Startup
+﻿@using System
+@using System.Linq
+@using Abp.Configuration.Startup
 @using Abp.Web.Mvc.Alerts
 @using Abp.Web.Security.AntiForgery
 @using ToeicApp.Web.Resources
@@ -11,7 +13,13 @@
     AbpAntiForgeryManager.SetCookie(Context);
 
     var pageTitle = !string.IsNullOrWhiteSpace(ViewBag.Title) ? ViewBag.Title + " / " : "";
-    pageTitle += "ToeicApp";
+    pageTitle += "TOEIC Console";
+    var userName = User?.Identity?.Name ?? "Quản trị viên";
+    var initials = string.Concat(userName
+        .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+        .Take(2)
+        .Select(part => part.Substring(0, 1).ToUpperInvariant()));
+    var currentPage = ViewBag.CurrentPageName as string;
 }
 <!DOCTYPE html>
 <html lang="@LanguageManager.CurrentLanguage.Name">
@@ -19,25 +27,118 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-
     <title>@pageTitle</title>
-
     @await Html.PartialAsync("_Styles.cshtml")
     @RenderSection("styles", required: false)
 </head>
-<body class="hold-transition sidebar-mini">
-    <div class="wrapper">
-        @await Html.PartialAsync("_Header.cshtml")
-        @await Html.PartialAsync("_SideBar.cshtml")
-        <div class="content-wrapper">
-            @await Html.PartialAsync("_Alerts.cshtml")
-            @RenderBody()
-        </div>
-        @await Html.PartialAsync("_Footer.cshtml")
+<body class="admin-console">
+    <div class="admin-shell">
+        <aside class="admin-sidebar" id="adminSidebar" aria-label="Điều hướng quản trị">
+            <a class="admin-brand" href="@Url.Action("Index", "Home")">
+                <span class="admin-brand-mark">
+                    <img src="~/img/admin/book-open.svg" alt="" />
+                </span>
+                <span class="admin-brand-copy">
+                    <strong>TOEIC Console</strong>
+                    <small>QUẢN LÝ ĐỀ READING</small>
+                </span>
+            </a>
+
+            <div class="admin-nav-label">KHÔNG GIAN QUẢN TRỊ</div>
+            <nav class="admin-nav">
+                <a class="admin-nav-link @(currentPage == "Home" ? "is-active" : "")" href="@Url.Action("Index", "Home")">
+                    <img src="~/img/admin/layout-dashboard.svg" alt="" />
+                    <span>Tổng quan</span>
+                </a>
+                <a class="admin-nav-link @(currentPage == "Exams" ? "is-active" : "")" href="@Url.Action("Index", "Exams")">
+                    <img src="~/img/admin/files.svg" alt="" />
+                    <span>Đề thi</span>
+                </a>
+                <a class="admin-nav-link" href="@Url.Action("Index", "Exams", new { import = true })">
+                    <img src="~/img/admin/upload.svg" alt="" />
+                    <span>Import đề thi</span>
+                </a>
+                <a class="admin-nav-link" href="@Url.Action("Index", "Home")#attempts-summary">
+                    <img src="~/img/admin/chart-no-axes-combined.svg" alt="" />
+                    <span>Lượt làm bài</span>
+                </a>
+            </nav>
+
+            <div class="admin-sidebar-bottom">
+                <a class="admin-help-link" href="@Url.Action("Index", "About")">
+                    <img src="~/img/admin/circle-help.svg" alt="" />
+                    <span>Hướng dẫn sử dụng</span>
+                </a>
+                <div class="admin-organization">
+                    <strong>Trung tâm Anh ngữ</strong>
+                    <span>Không gian giảng viên · v1.0</span>
+                </div>
+            </div>
+        </aside>
+
+        <div class="admin-sidebar-backdrop" data-admin-sidebar-close></div>
+        <main class="admin-main">
+            <header class="admin-topbar">
+                <button class="admin-menu-toggle" type="button" aria-label="Mở điều hướng" aria-controls="adminSidebar" aria-expanded="false">
+                    <span></span><span></span><span></span>
+                </button>
+                <div class="admin-breadcrumb">
+                    <img src="~/img/admin/house.svg" alt="" />
+                    <span>Quản trị</span>
+                    <span class="admin-breadcrumb-divider">/</span>
+                    <span>@(currentPage == "Exams" ? "Đề thi" : "Tổng quan")</span>
+                </div>
+                <details class="admin-account">
+                    <summary>
+                        <img class="admin-notification-icon" src="~/img/admin/bell.svg" alt="" />
+                        <span class="admin-account-divider"></span>
+                        <span class="admin-avatar">@initials</span>
+                        <span class="admin-account-copy">
+                            <strong>@userName</strong>
+                            <small>Quản trị viên</small>
+                        </span>
+                        <img class="admin-chevron-icon" src="~/img/admin/chevron-down.svg" alt="" />
+                    </summary>
+                    <div class="admin-account-menu">
+                        <a href="@Url.Action("Logout", "Account")">Đăng xuất</a>
+                    </div>
+                </details>
+            </header>
+
+            <div class="admin-page-content">
+                @await Html.PartialAsync("_Alerts.cshtml")
+                @RenderBody()
+            </div>
+            <footer class="admin-footer">TOEIC Console <span>·</span> Quản lý đề TOEIC Reading</footer>
+        </main>
     </div>
 
     @await Html.PartialAsync("_Scripts.cshtml")
     @RenderSection("scripts", required: false)
     @WebResourceManager.RenderScripts()
+    <script>
+        (function () {
+            var toggle = document.querySelector('.admin-menu-toggle');
+            var closeTargets = document.querySelectorAll('[data-admin-sidebar-close]');
+
+            if (!toggle) {
+                return;
+            }
+
+            function closeSidebar() {
+                document.body.classList.remove('admin-sidebar-open');
+                toggle.setAttribute('aria-expanded', 'false');
+            }
+
+            toggle.addEventListener('click', function () {
+                var isOpen = document.body.classList.toggle('admin-sidebar-open');
+                toggle.setAttribute('aria-expanded', String(isOpen));
+            });
+
+            closeTargets.forEach(function (target) {
+                target.addEventListener('click', closeSidebar);
+            });
+        }());
+    </script>
 </body>
 </html>

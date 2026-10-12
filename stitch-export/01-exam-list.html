@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;min-height:100vh;}body{overscroll-behavior-y:none;-webkit-tap-highlight-color:transparent;}.pb-safe{padding-bottom:max(env(safe-area-inset-bottom,0px),16px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "on-primary": "#ffffff", "surface-bright": "#faf8ff", "secondary": "#006a61", "on-primary-fixed": "#00164e", "on-tertiary": "#ffffff", "on-primary-fixed-variant": "#264191", "surface-container-high": "#e2e7ff", "on-secondary-container": "#006f66", "surface-container-highest": "#dae2fd", "on-surface": "#131b2e", "on-primary-container": "#90a8ff", "secondary-fixed": "#89f5e7", "inverse-surface": "#283044", "on-surface-variant": "#444651", "on-background": "#131b2e", "on-tertiary-fixed-variant": "#783200", "tertiary": "#4b1c00", "on-tertiary-fixed": "#341100", "surface-dim": "#d2d9f4", "primary-container": "#1e3a8a", "secondary-fixed-dim": "#6bd8cb", "secondary-container": "#86f2e4", "tertiary-fixed": "#ffdbca", "outline": "#757682", "primary-fixed": "#dce1ff", "error": "#ba1a1a", "inverse-on-surface": "#eef0ff", "outline-variant": "#c5c5d3", "surface-tint": "#4059aa", "on-secondary-fixed": "#00201d", "primary": "#00236f", "tertiary-fixed-dim": "#ffb690", "surface-container-lowest": "#ffffff", "on-secondary-fixed-variant": "#005049", "on-error": "#ffffff", "on-secondary": "#ffffff", "on-error-container": "#93000a", "tertiary-container": "#6e2d00", "surface": "#faf8ff", "surface-container-low": "#f2f3ff", "error-container": "#ffdad6", "background": "#faf8ff", "surface-container": "#eaedff", "primary-fixed-dim": "#b6c4ff", "inverse-primary": "#b6c4ff", "surface-variant": "#dae2fd", "on-tertiary-container": "#ff8f4f" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-md": "0.75rem", "space-xl": "1.5rem", "space-xs": "0.25rem", "space-sm": "0.5rem", "margin": "1rem", "gutter": "1rem", "space-lg": "1rem" }, "fontFamily": { "label-md": ["Be Vietnam Pro"], "headline-md": ["Be Vietnam Pro"], "body-sm": ["Be Vietnam Pro"], "title-reading": ["Be Vietnam Pro"], "body-reading": ["Be Vietnam Pro"], "body-md": ["Be Vietnam Pro"], "label-sm": ["Be Vietnam Pro"], "headline-xl": ["Be Vietnam Pro"], "label-lg": ["Be Vietnam Pro"], "headline-lg": ["Be Vietnam Pro"] }, "fontSize": { "label-md": ["13px", { "lineHeight": "18px", "fontWeight": "500" }], "headline-md": ["18px", { "lineHeight": "26px", "fontWeight": "600" }], "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }], "title-reading": ["17px", { "lineHeight": "26px", "fontWeight": "600" }], "body-reading": ["16px", { "lineHeight": "26px", "fontWeight": "400" }], "body-md": ["15px", { "lineHeight": "22px", "fontWeight": "400" }], "label-sm": ["11px", { "lineHeight": "14px", "fontWeight": "600" }], "headline-xl": ["28px", { "lineHeight": "36px", "fontWeight": "700" }], "label-lg": ["15px", { "lineHeight": "20px", "fontWeight": "600" }], "headline-lg": ["22px", { "lineHeight": "30px", "fontWeight": "700" }] } } } };</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface text-on-surface antialiased flex flex-col min-h-screen selection:bg-secondary/20"><header class="fixed top-0 inset-x-0 z-50 bg-surface/85 backdrop-blur-xl pt-safe shadow-[0_1px_8px_rgba(0,0,0,0.03)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm"><div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-on-primary shadow-sm"><span class="material-symbols-outlined text-[22px]">auto_stories</span></div><div><span class="block text-label-sm text-secondary font-label-sm uppercase tracking-wider">TOEIC Reading</span><h1 class="text-headline-md font-headline-md text-primary tracking-tight">Danh Sach De Thi</h1></div></div><div class="flex items-center gap-space-sm"><button aria-label="Thông báo" class="w-11 h-11 rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container active:scale-95 transition-all"><span class="material-symbols-outlined text-[22px]">notifications</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-24 bg-surface px-margin"><div class="flex flex-col w-full pb-6 space-y-4">
+<!-- Header Overview Stats Bento -->
+<section class="bg-surface-container-low rounded-xl p-space-lg shadow-sm">
+<div class="flex items-center justify-between">
+<div>
+<span class="text-label-sm font-label-sm text-secondary uppercase tracking-wider block">Lộ trình rèn luyện</span>
+<h2 class="text-headline-lg font-headline-lg text-primary mt-0.5">Đề thi TOEIC Reading</h2>
+</div>
+<div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container shadow-sm">
+<span class="material-symbols-outlined text-[24px]">verified</span>
+</div>
+</div>
+<div class="mt-space-md pt-space-sm flex items-center justify-between text-body-sm font-body-sm text-on-surface-variant">
+<span>Tiến độ tổng quan</span>
+<span class="text-label-md font-label-md text-primary">Đã hoàn thành 12/40 đề</span>
+</div>
+<!-- Mini Progress Bar -->
+<div class="w-full bg-surface-container-high h-2.5 rounded-full mt-2 overflow-hidden">
+<div class="bg-secondary h-full rounded-full transition-all duration-500" style="width: 30%"></div>
+</div>
+<div class="grid grid-cols-3 gap-2 mt-4 pt-2">
+<div class="bg-surface-container-lowest rounded-lg p-2.5 text-center shadow-xs">
+<span class="block text-label-sm font-label-sm text-outline">Điểm cao nhất</span>
+<span class="text-headline-md font-headline-md text-primary">445</span>
+</div>
+<div class="bg-surface-container-lowest rounded-lg p-2.5 text-center shadow-xs">
+<span class="block text-label-sm font-label-sm text-outline">Độ chính xác</span>
+<span class="text-headline-md font-headline-md text-secondary">82%</span>
+</div>
+<div class="bg-surface-container-lowest rounded-lg p-2.5 text-center shadow-xs">
+<span class="block text-label-sm font-label-sm text-outline">Thời gian TB</span>
+<span class="text-headline-md font-headline-md text-on-surface">68p</span>
+</div>
+</div>
+</section>
+<!-- Search & Filter Controls -->
+<section class="space-y-3">
+<!-- Search Bar -->
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3.5 text-outline text-[22px] pointer-events-none">search</span>
+<input class="w-full h-12 pl-11 pr-11 bg-surface-container-lowest rounded-xl text-body-md font-body-md text-on-surface placeholder:text-outline shadow-sm focus:outline-none focus:bg-surface-container-high transition-colors" id="examSearchInput" placeholder="Tìm kiếm đề thi, mã đề ETS..." type="text"/>
+<button aria-label="Xóa tìm kiếm" class="absolute right-2.5 w-8 h-8 rounded-full flex items-center justify-center text-outline hover:text-on-surface active:scale-90 transition-all opacity-0 pointer-events-none" id="clearSearchBtn">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<!-- Quick Filter Chips -->
+<div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5" id="filterChipsContainer">
+<button class="filter-chip px-4 h-9 rounded-full text-label-md font-label-md bg-primary text-on-primary shadow-sm flex items-center gap-1.5 shrink-0 transition-transform active:scale-95" data-filter="all">
+<span class="material-symbols-outlined text-[18px]">checklist</span>
+<span>Tất cả</span>
+</button>
+<button class="filter-chip px-4 h-9 rounded-full text-label-md font-label-md bg-surface-container text-on-surface-variant hover:bg-surface-container-high shrink-0 transition-transform active:scale-95" data-filter="todo">
+<span>Chưa làm</span>
+</button>
+<button class="filter-chip px-4 h-9 rounded-full text-label-md font-label-md bg-surface-container text-on-surface-variant hover:bg-surface-container-high shrink-0 transition-transform active:scale-95" data-filter="in-progress">
+<span>Đang dở</span>
+</button>
+<button class="filter-chip px-4 h-9 rounded-full text-label-md font-label-md bg-surface-container text-on-surface-variant hover:bg-surface-container-high shrink-0 transition-transform active:scale-95" data-filter="done">
+<span>Đã làm</span>
+</button>
+<button class="filter-chip px-4 h-9 rounded-full text-label-md font-label-md bg-surface-container text-on-surface-variant hover:bg-surface-container-high shrink-0 transition-transform active:scale-95" data-filter="high-score">
+<span>Điểm cao nhất</span>
+</button>
+</div>
+<!-- Part Quick Selector -->
+<div class="flex items-center justify-between px-1 text-label-sm font-label-sm text-outline">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-secondary">tune</span>
+        Phân loại Part:
+      </span>
+<div class="flex items-center gap-1.5">
+<span class="px-2 py-0.5 rounded bg-surface-container-highest text-primary font-semibold">Full Test</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant">Part 5</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant">Part 6</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant">Part 7</span>
+</div>
+</div>
+</section>
+<!-- Exam Cards List -->
+<section class="space-y-3.5" id="examCardList">
+<!-- Card 1: ETS 2024 Test 01 (Mới nhất / Chưa làm) -->
+<article class="bg-surface-container-lowest rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between" data-keywords="ets 2024 test 01 reading" data-status="todo">
+<div class="flex items-start justify-between gap-2">
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded-full bg-secondary text-on-secondary text-label-sm font-label-sm tracking-wide">Mới nhất</span>
+<span class="text-label-sm font-label-sm text-secondary flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[14px]">bolt</span> ETS Format
+            </span>
+</div>
+<h3 class="text-title-reading font-title-reading text-primary mt-1">ETS 2024 Test 01 - Reading</h3>
+</div>
+<button aria-label="Lưu đề thi" class="w-9 h-9 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface-variant active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[20px]">bookmark_border</span>
+</button>
+</div>
+<!-- Test Meta -->
+<div class="flex items-center gap-4 my-3 text-body-sm font-body-sm text-on-surface-variant">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px] text-outline">help_center</span>
+<span>100 câu</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px] text-outline">schedule</span>
+<span>75 phút</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px] text-secondary">radio_button_unchecked</span>
+<span class="text-secondary font-medium">Chưa làm</span>
+</div>
+</div>
+<!-- Action Button (Min height 48px) -->
+<button class="w-full h-12 rounded-xl bg-secondary hover:bg-on-secondary-container text-on-secondary font-label-lg text-label-lg flex items-center justify-center gap-2 shadow-sm active:scale-[0.98] transition-all">
+<span>Bắt đầu làm bài</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</article>
+<!-- Card 2: ETS 2024 Test 02 (Đã làm - 415/495) -->
+<article class="bg-surface-container-lowest rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between" data-keywords="ets 2024 test 02 reading" data-status="done">
+<div class="flex items-start justify-between gap-2">
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-primary font-label-sm text-label-sm">Đã hoàn thành</span>
+<span class="text-label-sm font-label-sm text-outline">18/04/2024</span>
+</div>
+<h3 class="text-title-reading font-title-reading text-primary mt-1">ETS 2024 Test 02 - Reading</h3>
+</div>
+<div class="text-right">
+<span class="text-headline-md font-headline-md text-secondary block">415<span class="text-label-sm font-label-sm text-outline font-normal">/495</span></span>
+<span class="text-label-sm font-label-sm text-on-surface-variant">84/100 câu đúng</span>
+</div>
+</div>
+<!-- Score Bar mini visual -->
+<div class="w-full bg-surface-container-high h-1.5 rounded-full my-3 overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 84%"></div>
+</div>
+<div class="flex items-center gap-4 mb-3 text-body-sm font-body-sm text-on-surface-variant">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px] text-outline">help_center</span>
+<span>100 câu</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px] text-outline">timer</span>
+<span>64 phút đã dùng</span>
+</div>
+</div>
+<!-- Action Buttons Pair -->
+<div class="grid grid-cols-2 gap-2">
+<button class="h-12 rounded-xl bg-surface-container-low text-primary font-label-lg text-label-lg flex items-center justify-center gap-1.5 active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-[18px]">replay</span>
+<span>Làm lại</span>
+</button>
+<button class="h-12 rounded-xl bg-primary text-on-primary font-label-lg text-label-lg flex items-center justify-center gap-1.5 shadow-sm active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-[18px]">query_stats</span>
+<span>Xem kết quả</span>
+</button>
+</div>
+</article>
+<!-- Card 3: Economy TOEIC Test 05 (Đang làm dở) -->
+<article class="bg-surface-container-lowest rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between" data-keywords="economy toeic test 05 reading" data-status="in-progress">
+<div class="flex items-start justify-between gap-2">
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-label-sm font-label-sm font-semibold flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span>
+              Đang làm dở
+            </span>
+<span class="text-label-sm font-label-sm text-on-tertiary-container font-medium">Câu 32/100</span>
+</div>
+<h3 class="text-title-reading font-title-reading text-primary mt-1">Economy TOEIC Test 05</h3>
+</div>
+<div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">pause_circle</span>
+</div>
+</div>
+<!-- Progress bar -->
+<div class="w-full bg-surface-container-high h-2 rounded-full my-3 overflow-hidden">
+<div class="bg-on-tertiary-container h-full rounded-full" style="width: 32%"></div>
+</div>
+<div class="flex items-center gap-4 mb-3 text-body-sm font-body-sm text-on-surface-variant">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px] text-outline">schedule</span>
+<span>Còn lại 48 phút</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px] text-outline">save</span>
+<span>Tự động lưu 2 phút trước</span>
+</div>
+</div>
+<!-- CTA Button -->
+<button class="w-full h-12 rounded-xl bg-primary-container text-on-primary font-label-lg text-label-lg flex items-center justify-center gap-2 shadow-sm active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-[20px]">play_arrow</span>
+<span>Tiếp tục làm bài (Câu 32)</span>
+</button>
+</article>
+<!-- Card 4: Hacker TOEIC Actual Test 01 (Chưa làm) -->
+<article class="bg-surface-container-lowest rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between" data-keywords="hacker toeic actual test 01 reading" data-status="todo">
+<div class="flex items-start justify-between gap-2">
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant text-label-sm font-label-sm">Độ khó: 850+</span>
+<span class="text-label-sm font-label-sm text-outline">Actual Test</span>
+</div>
+<h3 class="text-title-reading font-title-reading text-primary mt-1">Hacker TOEIC Actual Test 01</h3>
+</div>
+<button aria-label="Lưu đề thi" class="w-9 h-9 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface-variant active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[20px]">bookmark_border</span>
+</button>
+</div>
+<div class="flex items-center gap-4 my-3 text-body-sm font-body-sm text-on-surface-variant">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px] text-outline">help_center</span>
+<span>100 câu</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px] text-outline">schedule</span>
+<span>75 phút</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px] text-secondary">radio_button_unchecked</span>
+<span class="text-secondary font-medium">Chưa làm</span>
+</div>
+</div>
+<button class="w-full h-12 rounded-xl bg-secondary hover:bg-on-secondary-container text-on-secondary font-label-lg text-label-lg flex items-center justify-center gap-2 shadow-sm active:scale-[0.98] transition-all">
+<span>Bắt đầu làm bài</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</article>
+</section>
+<!-- Interactive State Switcher for UX Demo -->
+<section class="mt-4 pt-2">
+<div class="bg-surface-container-low rounded-xl p-3 shadow-xs">
+<div class="flex items-center justify-between mb-2">
+<span class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-primary">visibility</span>
+          Xem trước trạng thái UX
+        </span>
+<span class="text-label-sm font-label-sm text-outline">Click để thử</span>
+</div>
+<div class="grid grid-cols-3 gap-2">
+<button class="h-10 rounded-lg text-label-sm font-label-sm bg-primary text-on-primary transition-all flex items-center justify-center" id="toggleNormalBtn">
+          Bình thường
+        </button>
+<button class="h-10 rounded-lg text-label-sm font-label-sm bg-surface-container-highest text-primary transition-all flex items-center justify-center" id="toggleSkeletonBtn">
+          Đang tải
+        </button>
+<button class="h-10 rounded-lg text-label-sm font-label-sm bg-surface-container-highest text-primary transition-all flex items-center justify-center" id="toggleEmptyBtn">
+          Danh sách rỗng
+        </button>
+</div>
+</div>
+</section>
+<!-- State: Skeleton Loader (Hidden by default) -->
+<section class="hidden space-y-3.5" id="skeletonSection">
+<!-- Skeleton Item 1 -->
+<div class="bg-surface-container-lowest rounded-xl p-4 shadow-sm animate-pulse space-y-3">
+<div class="flex justify-between items-start">
+<div class="space-y-2 w-2/3">
+<div class="h-4 bg-surface-container-high rounded-full w-24"></div>
+<div class="h-6 bg-surface-container-high rounded-lg w-full"></div>
+</div>
+<div class="w-9 h-9 rounded-full bg-surface-container-high"></div>
+</div>
+<div class="flex gap-4">
+<div class="h-4 bg-surface-container rounded w-16"></div>
+<div class="h-4 bg-surface-container rounded w-20"></div>
+<div class="h-4 bg-surface-container rounded w-20"></div>
+</div>
+<div class="h-12 bg-surface-container-high rounded-xl w-full"></div>
+</div>
+<!-- Skeleton Item 2 -->
+<div class="bg-surface-container-lowest rounded-xl p-4 shadow-sm animate-pulse space-y-3">
+<div class="flex justify-between items-start">
+<div class="space-y-2 w-3/4">
+<div class="h-4 bg-surface-container-high rounded-full w-28"></div>
+<div class="h-6 bg-surface-container-high rounded-lg w-4/5"></div>
+</div>
+<div class="h-6 bg-surface-container-high rounded w-14"></div>
+</div>
+<div class="h-2 bg-surface-container rounded-full w-full"></div>
+<div class="grid grid-cols-2 gap-2">
+<div class="h-12 bg-surface-container-high rounded-xl"></div>
+<div class="h-12 bg-surface-container-high rounded-xl"></div>
+</div>
+</div>
+</section>
+<!-- State: Empty State (Illustrated & Human Friendly) -->
+<section class="hidden flex-col items-center justify-center text-center py-10 px-4 bg-surface-container-lowest rounded-xl shadow-sm" id="emptyStateSection">
+<div class="w-24 h-24 rounded-full bg-surface-container-high flex items-center justify-center text-primary mb-4 relative">
+<span class="material-symbols-outlined text-[48px] text-secondary">search_off</span>
+<div class="w-7 h-7 rounded-full bg-secondary-container absolute -bottom-1 -right-1 flex items-center justify-center text-on-secondary-container shadow-xs">
+<span class="material-symbols-outlined text-[18px]">menu_book</span>
+</div>
+</div>
+<h3 class="text-headline-md font-headline-md text-primary tracking-tight">Không tìm thấy đề thi phù hợp</h3>
+<p class="text-body-md font-body-md text-on-surface-variant max-w-xs mt-1.5">
+      Thử tìm kiếm với từ khóa khác như "ETS", "Hacker" hoặc đặt lại bộ lọc hiện tại để tiếp tục luyện đề nhé!
+    </p>
+<!-- Reset filter button (>=48px touch area) -->
+<button class="mt-6 h-12 px-6 rounded-xl bg-primary text-on-primary font-label-lg text-label-lg flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-all" id="resetFilterBtn">
+<span class="material-symbols-outlined text-[20px]">refresh</span>
+<span>Đặt lại bộ lọc</span>
+</button>
+</section>
+</div>
+<script>
+  (function() {
+    const searchInput = document.getElementById('examSearchInput');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+    const filterChips = document.querySelectorAll('.filter-chip');
+    const examCardList = document.getElementById('examCardList');
+    const skeletonSection = document.getElementById('skeletonSection');
+    const emptyStateSection = document.getElementById('emptyStateSection');
+    const resetFilterBtn = document.getElementById('resetFilterBtn');
+
+    const toggleNormalBtn = document.getElementById('toggleNormalBtn');
+    const toggleSkeletonBtn = document.getElementById('toggleSkeletonBtn');
+    const toggleEmptyBtn = document.getElementById('toggleEmptyBtn');
+
+    let currentFilter = 'all';
+
+    function setActiveState(state) {
+      // state: 'normal' | 'skeleton' | 'empty'
+      examCardList.classList.add('hidden');
+      skeletonSection.classList.add('hidden');
+      emptyStateSection.classList.add('hidden');
+      emptyStateSection.classList.remove('flex');
+
+      toggleNormalBtn.className = "h-10 rounded-lg text-label-sm font-label-sm bg-surface-container-highest text-primary transition-all flex items-center justify-center";
+      toggleSkeletonBtn.className = "h-10 rounded-lg text-label-sm font-label-sm bg-surface-container-highest text-primary transition-all flex items-center justify-center";
+      toggleEmptyBtn.className = "h-10 rounded-lg text-label-sm font-label-sm bg-surface-container-highest text-primary transition-all flex items-center justify-center";
+
+      if (state === 'normal') {
+        examCardList.classList.remove('hidden');
+        toggleNormalBtn.className = "h-10 rounded-lg text-label-sm font-label-sm bg-primary text-on-primary transition-all flex items-center justify-center shadow-sm";
+        applyFilters();
+      } else if (state === 'skeleton') {
+        skeletonSection.classList.remove('hidden');
+        toggleSkeletonBtn.className = "h-10 rounded-lg text-label-sm font-label-sm bg-primary text-on-primary transition-all flex items-center justify-center shadow-sm";
+      } else if (state === 'empty') {
+        emptyStateSection.classList.remove('hidden');
+        emptyStateSection.classList.add('flex');
+        toggleEmptyBtn.className = "h-10 rounded-lg text-label-sm font-label-sm bg-primary text-on-primary transition-all flex items-center justify-center shadow-sm";
+      }
+    }
+
+    function applyFilters() {
+      const query = (searchInput.value || '').trim().toLowerCase();
+      const cards = examCardList.querySelectorAll('article');
+      let visibleCount = 0;
+
+      cards.forEach(card => {
+        const keywords = card.getAttribute('data-keywords') || '';
+        const status = card.getAttribute('data-status') || '';
+
+        const matchesQuery = !query || keywords.includes(query);
+        let matchesStatus = true;
+
+        if (currentFilter === 'todo') matchesStatus = (status === 'todo');
+        else if (currentFilter === 'done') matchesStatus = (status === 'done');
+        else if (currentFilter === 'in-progress') matchesStatus = (status === 'in-progress');
+        else if (currentFilter === 'high-score') matchesStatus = (status === 'done');
+
+        if (matchesQuery && matchesStatus) {
+          card.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+
+      if (visibleCount === 0) {
+        examCardList.classList.add('hidden');
+        emptyStateSection.classList.remove('hidden');
+        emptyStateSection.classList.add('flex');
+      } else {
+        examCardList.classList.remove('hidden');
+        emptyStateSection.classList.add('hidden');
+        emptyStateSection.classList.remove('flex');
+      }
+    }
+
+    // Search Input listeners
+    searchInput.addEventListener('input', function() {
+      if (this.value.length > 0) {
+        clearSearchBtn.classList.remove('opacity-0', 'pointer-events-none');
+      } else {
+        clearSearchBtn.classList.add('opacity-0', 'pointer-events-none');
+      }
+      setActiveState('normal');
+    });
+
+    clearSearchBtn.addEventListener('click', function() {
+      searchInput.value = '';
+      clearSearchBtn.classList.add('opacity-0', 'pointer-events-none');
+      setActiveState('normal');
+      searchInput.focus();
+    });
+
+    // Filter Chips
+    filterChips.forEach(chip => {
+      chip.addEventListener('click', function() {
+        filterChips.forEach(c => {
+          c.className = 'filter-chip px-4 h-9 rounded-full text-label-md font-label-md bg-surface-container text-on-surface-variant hover:bg-surface-container-high shrink-0 transition-transform active:scale-95';
+        });
+        this.className = 'filter-chip px-4 h-9 rounded-full text-label-md font-label-md bg-primary text-on-primary shadow-sm shrink-0 transition-transform active:scale-95';
+        currentFilter = this.getAttribute('data-filter');
+        setActiveState('normal');
+      });
+    });
+
+    // Reset Filter Button
+    resetFilterBtn.addEventListener('click', function() {
+      searchInput.value = '';
+      clearSearchBtn.classList.add('opacity-0', 'pointer-events-none');
+      currentFilter = 'all';
+      filterChips.forEach((c, idx) => {
+        if (idx === 0) {
+          c.className = 'filter-chip px-4 h-9 rounded-full text-label-md font-label-md bg-primary text-on-primary shadow-sm shrink-0 transition-transform active:scale-95';
+        } else {
+          c.className = 'filter-chip px-4 h-9 rounded-full text-label-md font-label-md bg-surface-container text-on-surface-variant hover:bg-surface-container-high shrink-0 transition-transform active:scale-95';
+        }
+      });
+      setActiveState('normal');
+    });
+
+    // UX Preview Toggles
+    toggleNormalBtn.addEventListener('click', () => setActiveState('normal'));
+    toggleSkeletonBtn.addEventListener('click', () => setActiveState('skeleton'));
+    toggleEmptyBtn.addEventListener('click', () => setActiveState('empty'));
+  })();
+</script></main><nav class="fixed bottom-0 inset-x-0 z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-4px_20px_rgba(15,23,42,0.05)]" data-active-classes="text-secondary bg-secondary/10"><div class="flex justify-around items-center h-16 px-space-xs"><a class="flex flex-col items-center justify-center min-w-[64px] h-12 rounded-xl text-on-surface-variant hover:text-on-surface active:scale-95 transition-all" data-path="trang-chu" href="#"><span class="material-symbols-outlined text-[24px]">home</span><span class="text-label-sm font-label-sm mt-0.5">Trang chủ</span></a><a aria-current="page" class="flex flex-col items-center justify-center min-w-[64px] h-12 rounded-xl active:scale-95 transition-all text-secondary bg-secondary/10" data-path="danh-sach-de-thi" href="#"><span class="material-symbols-outlined text-[24px]">menu_book</span><span class="text-label-sm font-label-sm mt-0.5">Bộ đề</span></a><a class="flex flex-col items-center justify-center min-w-[64px] h-12 rounded-xl text-on-surface-variant hover:text-on-surface active:scale-95 transition-all" data-path="so-tay-tu-vung" href="#"><span class="material-symbols-outlined text-[24px]">style</span><span class="text-label-sm font-label-sm mt-0.5">Từ vựng</span></a><a class="flex flex-col items-center justify-center min-w-[64px] h-12 rounded-xl text-on-surface-variant hover:text-on-surface active:scale-95 transition-all" data-path="thong-ke-ket-qua" href="#"><span class="material-symbols-outlined text-[24px]">analytics</span><span class="text-label-sm font-label-sm mt-0.5">Thống kê</span></a><a class="flex flex-col items-center justify-center min-w-[64px] h-12 rounded-xl text-on-surface-variant hover:text-on-surface active:scale-95 transition-all" data-path="tai-khoan" href="#"><span class="material-symbols-outlined text-[24px]">account_circle</span><span class="text-label-sm font-label-sm mt-0.5">Cá nhân</span></a></div></nav></body></html>

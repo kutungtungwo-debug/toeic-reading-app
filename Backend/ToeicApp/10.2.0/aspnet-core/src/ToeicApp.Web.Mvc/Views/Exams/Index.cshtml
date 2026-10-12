@@ -1,0 +1,502 @@
+@using ToeicApp.Web.Startup
+@using ToeicApp.Exams.Dto
+@model List<ExamListItemDto>
+@{
+    ViewBag.Title = "Danh sách đề thi";
+    ViewBag.CurrentPageName = PageNames.Exams;
+}
+
+@section styles
+{
+    <style>
+        .error-list { max-height: 220px; overflow-y: auto; font-size: 13px; line-height: 1.5; margin-bottom: 0; }
+        .exam-list-page .exam-legacy-kpis,
+        .exam-list-page .exam-legacy-table-title { display: none !important; }
+        .exam-list-heading { padding: 0 !important; }
+        .exam-list-content { padding: 0 !important; }
+        .exam-list-page { width: 100%; max-width: 1500px; margin: 0 auto; }
+        .exam-filter-panel { margin-bottom: 14px; }
+        .exam-filter-fields { display: grid; grid-template-columns: minmax(220px, 1fr) 180px minmax(220px, 240px) auto; align-items: end; gap: 10px; }
+        .exam-filter-field { display: flex; min-width: 0; flex-direction: column; gap: 5px; }
+        .exam-filter-field label { margin: 0; color: #68788d; font-size: 10px; font-weight: 500; }
+        .exam-filter-control { width: 100%; height: 38px; padding: 0 10px; border: 1px solid #dfe5ec; border-radius: 7px; background: #fff; color: #172b45; font: inherit; font-size: 11px; }
+        .exam-filter-control:focus { border-color: #7891af; outline: 2px solid rgba(20, 45, 78, .1); }
+        .exam-filter-reset { height: 38px; padding: 0 12px; border: 1px solid #dfe5ec; border-radius: 7px; background: #fff; color: #142d4e; font-size: 11px; font-weight: 600; }
+        .exam-filter-reset:hover { background: #f8fafc; }
+        .exam-list-meta { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 10px; }
+        .exam-filter-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+        .exam-filter-pill { padding: 5px 9px; border: 0; border-radius: 5px; background: #eaf0f7; color: #142d4e; font-size: 10px; font-weight: 600; }
+        .exam-filter-pill[data-status-filter="published"] { background: #e8f6f2; color: #087f78; }
+        .exam-filter-pill[data-status-filter="draft"] { background: #f8fafc; color: #68788d; }
+        .exam-filter-pill.is-active { box-shadow: inset 0 0 0 1px currentColor; }
+        .exam-result-count { color: #68788d; font-size: 10px; white-space: nowrap; }
+        .exam-list-table-card { margin: 0; overflow: hidden; border: 1px solid #dfe5ec !important; border-radius: 10px !important; background: #fff; box-shadow: none !important; }
+        .exam-list-table-card .card-body { padding: 0 !important; }
+        .exam-list-table-card .table-responsive { overflow-x: auto; }
+        .exam-list-table-card .console-table { min-width: 780px; }
+        .exam-list-table-card .console-table th:first-child,
+        .exam-list-table-card .console-table td:first-child { padding-left: 16px; }
+        .exam-list-table-card .console-table th:last-child,
+        .exam-list-table-card .console-table td:last-child { padding-right: 16px; }
+        .exam-list-table-card .console-table th { height: 42px; }
+        .exam-list-table-card .console-table td { height: 60px; }
+        .exam-list-table-card .console-exam-title { font-size: 11px; }
+        .exam-list-table-card .console-exam-subtitle { font-size: 9px; }
+        .exam-pagination { display: flex; align-items: center; gap: 6px; color: #68788d; font-size: 10px; }
+        .exam-pagination button { width: 28px; height: 28px; border: 0; border-radius: 6px; background: transparent; color: #142d4e; }
+        .exam-pagination button:hover:not(:disabled) { background: #f1f5f9; }
+        .exam-pagination button:disabled { color: #a9bbd0; cursor: default; }
+        .exam-pagination span { min-width: 22px; text-align: center; }
+        .exam-pagination .exam-page-current { display: grid; width: 28px; height: 28px; place-items: center; border-radius: 6px; background: #142d4e; color: #fff; font-weight: 600; }
+        @@media (max-width: 760px) {
+            .exam-filter-fields { grid-template-columns: minmax(0, 1fr) minmax(140px, .7fr); }
+            .exam-filter-date { grid-column: 1 / -1; }
+            .exam-filter-reset { grid-column: 1 / -1; }
+            .exam-list-meta { align-items: flex-start; flex-direction: column; }
+        }
+        @@media (max-width: 420px) {
+            .exam-filter-fields { grid-template-columns: minmax(0, 1fr); }
+            .exam-filter-date,
+            .exam-filter-reset { grid-column: auto; }
+        }
+    </style>
+}
+
+<section class="exam-list-heading">
+    <div class="console-page-heading">
+        <div>
+            <h1>Danh sách đề thi</h1>
+            <p>Quản lý, chỉnh sửa và xuất bản các đề TOEIC Reading trong kho đề.</p>
+        </div>
+        <button type="button" class="console-button console-button-primary" data-toggle="modal" data-target="#ImportExamModal">
+            <img src="~/img/admin/upload-alt.svg" alt="" />
+            <span>Import đề thi</span>
+        </button>
+    </div>
+</section>
+
+<section class="exam-list-content">
+    <div class="exam-list-page">
+        <!-- KPI Cards -->
+        <div class="row mb-3 exam-legacy-kpis">
+            <div class="col-md-3 col-sm-6 col-12">
+                <div class="card kpi-card p-3 mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="kpi-icon bg-light-primary text-primary mr-3" style="background:#e8f0fe;">
+                            <i class="fas fa-layer-group"></i>
+                        </div>
+                        <div>
+                            <div class="text-muted small text-uppercase font-weight-bold">Tổng số đề</div>
+                            <h3 class="font-weight-bold m-0">@Model.Count</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 col-12">
+                <div class="card kpi-card p-3 mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="kpi-icon mr-3" style="background:#e6f4ea; color:#137333;">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div>
+                            <div class="text-muted small text-uppercase font-weight-bold">Đã xuất bản (Live)</div>
+                            <h3 class="font-weight-bold m-0 text-success">@Model.Count(e => e.IsPublished)</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 col-12">
+                <div class="card kpi-card p-3 mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="kpi-icon mr-3" style="background:#fef7e0; color:#b06000;">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        <div>
+                            <div class="text-muted small text-uppercase font-weight-bold">Bản nháp (Draft)</div>
+                            <h3 class="font-weight-bold m-0 text-warning">@Model.Count(e => !e.IsPublished)</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 col-12">
+                <div class="card kpi-card p-3 mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="kpi-icon mr-3" style="background:#fce8e6; color:#c5221f;">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div>
+                            <div class="text-muted small text-uppercase font-weight-bold">Thời lượng chuẩn</div>
+                            <h3 class="font-weight-bold m-0">75 phút</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="exam-filter-panel">
+            <div class="exam-filter-fields">
+                <div class="exam-filter-field">
+                    <label for="examSearch">Tìm kiếm đề thi</label>
+                    <input class="exam-filter-control" id="examSearch" type="search" placeholder="Tìm theo tên đề thi..." />
+                </div>
+                <div class="exam-filter-field">
+                    <label for="examStatusFilter">Trạng thái</label>
+                    <select class="exam-filter-control" id="examStatusFilter">
+                        <option value="all">Tất cả trạng thái</option>
+                        <option value="published">Đã xuất bản</option>
+                        <option value="draft">Bản nháp</option>
+                    </select>
+                </div>
+                <div class="exam-filter-field exam-filter-date">
+                    <label for="examCreatedAfter">Ngày tạo từ</label>
+                    <input class="exam-filter-control" id="examCreatedAfter" type="date" />
+                </div>
+                <button class="exam-filter-reset" id="resetExamFilters" type="button">Đặt lại</button>
+            </div>
+            <div class="exam-list-meta">
+                <div class="exam-filter-pills" aria-label="Lọc nhanh theo trạng thái">
+                    <button class="exam-filter-pill is-active" type="button" data-status-filter="all">Tất cả <span>@Model.Count</span></button>
+                    <button class="exam-filter-pill" type="button" data-status-filter="published">Đã xuất bản <span>@Model.Count(e => e.IsPublished)</span></button>
+                    <button class="exam-filter-pill" type="button" data-status-filter="draft">Bản nháp <span>@Model.Count(e => !e.IsPublished)</span></button>
+                </div>
+                <span class="exam-result-count" id="examResultCount">@Model.Count đề thi</span>
+            </div>
+        </div>
+
+        <!-- Exam Table Card -->
+        <div class="card shadow-sm border-0 exam-list-table-card">
+            <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center exam-legacy-table-title">
+                <h5 class="card-title font-weight-bold text-dark m-0">Danh sách đề thi trong hệ thống</h5>
+                <span class="badge badge-secondary px-3 py-2 font-weight-normal">@Model.Count đề</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="console-table" id="ExamsTable">
+                        <thead class="bg-light text-muted small text-uppercase">
+                            <tr>
+                                <th class="console-exam-name-column">Tên đề thi</th>
+                                <th>Số câu</th>
+                                <th>Thời gian</th>
+                                <th>Trạng thái</th>
+                                <th>Cập nhật</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model == null || !Model.Any())
+                            {
+                                <tr>
+                                    <td colspan="6" class="console-empty-cell">
+                                        Chưa có đề thi nào. Import file Word để bắt đầu tạo đề mới.
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                @foreach (var exam in Model)
+                                {
+                                    <tr data-exam-row data-title="@exam.Title" data-status="@(exam.IsPublished ? "published" : "draft")" data-created="@exam.CreationTime.ToString("yyyy-MM-dd")">
+                                        <td class="console-exam-name-column">
+                                            <a href="@Url.Action("Preview", "Exams", new { id = exam.Id })" class="console-exam-title">
+                                                @exam.Title
+                                            </a>
+                                            <span class="console-exam-subtitle">Đề @exam.Id.ToString("D2") · Reading · Part 5, 6, 7</span>
+                                        </td>
+                                        <td>@exam.TotalQuestions</td>
+                                        <td>@exam.DurationMinutes phút</td>
+                                        <td>
+                                            @if (exam.IsPublished)
+                                            {
+                                                <span class="console-status console-status-published"><i></i>Đã xuất bản</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="console-status console-status-draft"><i></i>Bản nháp</span>
+                                            }
+                                        </td>
+                                        <td class="console-date-cell">
+                                            <span>@exam.CreationTime.ToLocalTime().ToString("dd/MM/yyyy")</span>
+                                            <small>@exam.CreationTime.ToLocalTime().ToString("HH:mm")</small>
+                                        </td>
+                                        <td>
+                                            <div class="console-row-actions">
+                                            <a href="@Url.Action("Preview", "Exams", new { id = exam.Id })" class="console-icon-button" title="Xem trước và chỉnh sửa" aria-label="Xem trước và chỉnh sửa">
+                                                <img src="~/img/admin/eye.svg" alt="" />
+                                            </a>
+                                            <button type="button" class="console-icon-button btn-toggle-publish"
+                                                    data-id="@exam.Id" data-published="@(exam.IsPublished ? "true" : "false")"
+                                                    title="@(exam.IsPublished ? "Gỡ xuất bản" : "Xuất bản")" aria-label="@(exam.IsPublished ? "Gỡ xuất bản" : "Xuất bản")">
+                                                <img src="@(exam.IsPublished ? Url.Content("~/img/admin/send-muted.svg") : Url.Content("~/img/admin/send.svg"))" alt="" />
+                                            </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                                <tr id="examNoFilteredResults" style="display:none;">
+                                    <td colspan="6" class="console-empty-cell">Không tìm thấy đề thi phù hợp với bộ lọc.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="console-table-footer">
+                    <span id="examTableRange">Hiển thị @Model.Count đề thi</span>
+                    <div class="exam-pagination" aria-label="Phân trang danh sách đề thi">
+                        <button type="button" id="examPagePrevious" aria-label="Trang trước" disabled>‹</button>
+                        <span class="exam-page-current" id="examCurrentPage">1</span>
+                        <span>/</span>
+                        <span id="examTotalPages">1</span>
+                        <button type="button" id="examPageNext" aria-label="Trang sau" disabled>›</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modal: Import đề thi Word (.docx) -->
+<div class="modal fade" id="ImportExamModal" tabindex="-1" role="dialog" aria-labelledby="ImportExamModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" style="border-radius:14px; overflow:hidden;">
+            <form id="importForm" enctype="multipart/form-data">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title font-weight-bold" id="ImportExamModalLabel">
+                        <i class="fas fa-file-word mr-2"></i>Import đề thi từ file Word (.docx)
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="alert alert-info border-0" style="background:#e8f4fd; color:#0d47a1;">
+                        <h6 class="font-weight-bold mb-1"><i class="fas fa-info-circle mr-1"></i> Quy định định dạng file Word chuẩn TOEIC:</h6>
+                        <ul class="mb-0 pl-3 small">
+                            <li>Cần đầy đủ các phần: <code>[PART 5]</code> (101-130), <code>[PART 6]</code> (131-146), <code>[PART 7]</code> (147-200).</li>
+                            <li>Đoạn văn được bọc trong <code>[GROUP start-end]</code>, <code>[PASSAGE]</code> nội dung hoặc ảnh <code>[IMG]</code>, <code>[/PASSAGE]</code>, câu hỏi, <code>[/GROUP]</code>.</li>
+                            <li>Mỗi câu hỏi gồm <code>[Q số_câu]</code>, <code>[A]</code>, <code>[B]</code>, <code>[C]</code>, <code>[D]</code> và <code>[ANS] X</code>.</li>
+                            <li><strong>Chỉ lưu vào CSDL khi file đúng 100% chuẩn</strong>. Nếu sai sót, hệ thống sẽ hủy bỏ và liệt kê lỗi chi tiết.</li>
+                        </ul>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="font-weight-bold">Tên đề thi <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control form-control-lg" name="title" id="examTitle" placeholder="Ví dụ: ETS TOEIC 2024 - Test 01" required />
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 form-group mb-3">
+                            <label class="font-weight-bold">Thời lượng thi (phút)</label>
+                            <input type="number" class="form-control" name="durationMinutes" id="examDuration" value="75" min="1" max="300" />
+                        </div>
+                        <div class="col-md-6 form-group mb-3">
+                            <label class="font-weight-bold">Chọn file Word (.docx) <span class="text-danger">*</span></label>
+                            <input type="file" class="form-control-file border p-2 rounded w-100" name="file" id="examFile" accept=".docx" required />
+                        </div>
+                    </div>
+
+                    <!-- Validation Error Box -->
+                    <div id="importErrorsContainer" class="alert alert-danger d-none mt-3">
+                        <div class="font-weight-bold mb-2">
+                            <i class="fas fa-exclamation-triangle mr-1"></i> Phát hiện lỗi định dạng! Đã hủy bỏ lưu CSDL:
+                        </div>
+                        <ul id="importErrorsList" class="error-list pl-3"></ul>
+                        <div class="small text-muted mt-2">Vui lòng chỉnh sửa các lỗi trên trong file Word và tải lên lại.</div>
+                    </div>
+
+                    <!-- Progress Spinner -->
+                    <div id="importLoading" class="text-center py-3 d-none">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <p class="font-weight-bold text-primary mt-2">Đang phân tích cấu trúc tài liệu Word và kiểm tra định dạng...</p>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary px-4" data-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-primary px-4 font-weight-bold" id="btnSubmitImport">
+                        <i class="fas fa-upload mr-1"></i> Bắt đầu Import
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script>
+        $(function () {
+            var examRows = Array.from(document.querySelectorAll('[data-exam-row]'));
+            var pageSize = 8;
+            var currentPage = 1;
+            var statusFilter = 'all';
+
+            function applyExamFilters() {
+                var searchTerm = ($('#examSearch').val() || '').toLowerCase().trim();
+                var selectedStatus = $('#examStatusFilter').val();
+                var createdAfter = $('#examCreatedAfter').val();
+                var matchingRows = examRows.filter(function (row) {
+                    var matchesSearch = row.dataset.title.toLowerCase().includes(searchTerm);
+                    var matchesStatus = selectedStatus === 'all' || row.dataset.status === selectedStatus;
+                    var matchesQuickFilter = statusFilter === 'all' || row.dataset.status === statusFilter;
+                    var matchesDate = !createdAfter || row.dataset.created >= createdAfter;
+                    return matchesSearch && matchesStatus && matchesQuickFilter && matchesDate;
+                });
+                var totalPages = Math.max(1, Math.ceil(matchingRows.length / pageSize));
+                currentPage = Math.min(currentPage, totalPages);
+
+                examRows.forEach(function (row) {
+                    row.style.display = 'none';
+                });
+
+                matchingRows.slice((currentPage - 1) * pageSize, currentPage * pageSize).forEach(function (row) {
+                    row.style.display = '';
+                });
+
+                $('#examNoFilteredResults').toggle(examRows.length > 0 && matchingRows.length === 0);
+                $('#examResultCount').text(matchingRows.length + ' đề thi');
+                $('#examCurrentPage').text(currentPage);
+                $('#examTotalPages').text(totalPages);
+                $('#examPagePrevious').prop('disabled', currentPage <= 1);
+                $('#examPageNext').prop('disabled', currentPage >= totalPages);
+
+                if (matchingRows.length === 0) {
+                    $('#examTableRange').text(examRows.length === 0 ? 'Chưa có đề thi' : 'Không có đề thi phù hợp');
+                } else {
+                    var firstResult = (currentPage - 1) * pageSize + 1;
+                    var lastResult = Math.min(currentPage * pageSize, matchingRows.length);
+                    $('#examTableRange').text('Hiển thị ' + firstResult + '–' + lastResult + ' trong ' + matchingRows.length + ' đề thi');
+                }
+            }
+
+            $('#examSearch, #examStatusFilter, #examCreatedAfter').on('input change', function () {
+                currentPage = 1;
+                applyExamFilters();
+            });
+
+            $('[data-status-filter]').on('click', function () {
+                statusFilter = $(this).data('status-filter');
+                $('#examStatusFilter').val('all');
+                $('[data-status-filter]').removeClass('is-active');
+                $(this).addClass('is-active');
+                currentPage = 1;
+                applyExamFilters();
+            });
+
+            $('#resetExamFilters').on('click', function () {
+                $('#examSearch, #examCreatedAfter').val('');
+                $('#examStatusFilter').val('all');
+                statusFilter = 'all';
+                $('[data-status-filter]').removeClass('is-active').filter('[data-status-filter="all"]').addClass('is-active');
+                currentPage = 1;
+                applyExamFilters();
+            });
+
+            $('#examPagePrevious').on('click', function () {
+                if (currentPage > 1) {
+                    currentPage--;
+                    applyExamFilters();
+                }
+            });
+
+            $('#examPageNext').on('click', function () {
+                currentPage++;
+                applyExamFilters();
+            });
+
+            applyExamFilters();
+
+            if (@(ViewBag.OpenImportDialog == true ? "true" : "false")) {
+                $('#ImportExamModal').modal('show');
+            }
+
+            // Import AJAX
+            $('#importForm').on('submit', function (e) {
+                e.preventDefault();
+                var fileInput = document.getElementById('examFile');
+                if (!fileInput.files || fileInput.files.length === 0) {
+                    abp.message.warn('Vui lòng chọn file Word .docx.');
+                    return;
+                }
+
+                var formData = new FormData(this);
+                $('#importErrorsContainer').addClass('d-none');
+                $('#importErrorsList').empty();
+                $('#importLoading').removeClass('d-none');
+                $('#btnSubmitImport').prop('disabled', true);
+
+                $.ajax({
+                    url: '@Url.Action("Import", "Exams")',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (res) {
+                        $('#importLoading').addClass('d-none');
+                        $('#btnSubmitImport').prop('disabled', false);
+
+                        var result = res && res.result ? res.result : res;
+                        if (result && result.success) {
+                            abp.message.success('Import đề thi thành công (' + result.totalQuestions + ' câu)!', 'Thành công', function() {
+                                window.location.href = '@Url.Action("Preview", "Exams")/' + result.examId;
+                            });
+                        } else {
+                            var errors = result && result.errors || ['Lỗi không xác định khi đọc file.'];
+                            $('#importErrorsContainer').removeClass('d-none');
+                            errors.forEach(function (err) {
+                                $('#importErrorsList').append('<li>' + err + '</li>');
+                            });
+                        }
+                    },
+                    error: function (xhr) {
+                        $('#importLoading').addClass('d-none');
+                        $('#btnSubmitImport').prop('disabled', false);
+                        var response = xhr.responseJSON;
+                        response = response && response.result ? response.result : response;
+                        if (response && response.errors && response.errors.length > 0) {
+                            $('#importErrorsContainer').removeClass('d-none');
+                            response.errors.forEach(function (err) {
+                                $('#importErrorsList').append('<li>' + err + '</li>');
+                            });
+                            return;
+                        }
+                        abp.message.error(response && response.message || 'Không thể kết nối đến máy chủ.');
+                    }
+                });
+            });
+
+            // Toggle Publish
+            $('.btn-toggle-publish').on('click', function () {
+                var btn = $(this);
+                var examId = btn.data('id');
+                var isCurrentlyPublished = btn.data('published') === true || btn.data('published') === 'true';
+                var nextState = !isCurrentlyPublished;
+                var actionText = nextState ? 'xuất bản' : 'gỡ xuất bản';
+
+                abp.message.confirm('Bạn có chắc chắn muốn ' + actionText + ' đề thi này?', 'Xác nhận', function (isConfirmed) {
+                    if (isConfirmed) {
+                        abp.ui.setBusy();
+                        $.ajax({
+                            url: '@Url.Action("SetPublished", "Exams")',
+                            type: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify({ id: examId, isPublished: nextState }),
+                            success: function (res) {
+                                abp.ui.clearBusy();
+                                var result = res && res.result ? res.result : res;
+                                if (result && result.success && result.isPublished === nextState) {
+                                    abp.notify.success('Cập nhật trạng thái đề thi thành công.');
+                                    setTimeout(function () { location.reload(); }, 800);
+                                } else {
+                                    abp.message.error(result && result.message || 'Lỗi khi cập nhật trạng thái.');
+                                }
+                            },
+                            error: function (xhr) {
+                                abp.ui.clearBusy();
+                                abp.message.error('Lỗi khi gửi yêu cầu lên server.');
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+}

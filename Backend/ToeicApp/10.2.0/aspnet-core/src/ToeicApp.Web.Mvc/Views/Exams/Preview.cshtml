@@ -1,0 +1,509 @@
+@using ToeicApp.Web.Startup
+@using ToeicApp.Exams.Dto
+@model ExamPreviewDto
+@{
+    ViewBag.Title = "Rà soát & Xem trước đề thi - " + Model.Title;
+    ViewBag.CurrentPageName = PageNames.Exams;
+}
+
+@section styles
+{
+    <style>
+        .part-nav-pills .nav-link {
+            border-radius: 10px;
+            font-weight: 700;
+            padding: 10px 20px;
+            color: #495057;
+            background: #fff;
+            border: 1px solid #dee2e6;
+            margin-right: 8px;
+        }
+        .part-nav-pills .nav-link.active {
+            background-color: #007bff;
+            color: #fff;
+            border-color: #007bff;
+            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.25);
+        }
+        .passage-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid #17a2b8;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        .image-preview-container {
+            border: 2px dashed #007bff;
+            background: #f0f8ff;
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        .image-preview-container img {
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .question-card {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        .option-badge {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .option-badge-correct {
+            background-color: #28a745;
+            color: #fff;
+        }
+        .option-badge-normal {
+            background-color: #e9ecef;
+            color: #495057;
+        }
+    </style>
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row align-items-center mb-2">
+            <div class="col-sm-6">
+                <div class="d-flex align-items-center">
+                    <a href="@Url.Action("Index", "Exams")" class="btn btn-outline-secondary mr-3" title="Quay lại danh sách đề">
+                        <i class="fas fa-arrow-left"></i>
+                    </a>
+                    <div>
+                        <h1 class="m-0 font-weight-bold text-dark">
+                            <i class="fas fa-spell-check text-info mr-2"></i>Rà soát & Xem trước đề thi
+                        </h1>
+                        <p class="text-muted small mt-1 mb-0">Kiểm tra lỗi chính tả nội dung câu hỏi, đoạn văn và kiểm tra hiển thị hình ảnh</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 text-right">
+                <button type="button" class="btn btn-outline-secondary mr-2" onclick="location.reload();">
+                    <i class="fas fa-sync-alt mr-1"></i> Làm mới
+                </button>
+                <button type="button" class="btn btn-primary shadow-sm mr-2" id="btnSaveExam">
+                    <i class="fas fa-save mr-1"></i> Lưu thay đổi chính tả
+                </button>
+                <button type="button" class="btn @(Model.IsPublished ? "btn-warning" : "btn-success") shadow-sm" id="btnPublishToggle" data-published="@(Model.IsPublished ? "true" : "false")">
+                    <i class="fas @(Model.IsPublished ? "fa-eye-slash" : "fa-globe") mr-1"></i>
+                    @(Model.IsPublished ? "Gỡ xuất bản" : "Xuất bản đề thi")
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <!-- Exam Meta Info Card -->
+        <div class="card shadow-sm border-0 mb-3" style="border-radius:12px;">
+            <div class="card-body py-3">
+                <div class="row align-items-center">
+                    <div class="col-md-5">
+                        <label class="small text-muted font-weight-bold text-uppercase m-0">Tên đề thi</label>
+                        <input type="text" class="form-control font-weight-bold" id="examTitleInput" value="@Model.Title" style="font-size:1.1rem;" />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="small text-muted font-weight-bold text-uppercase m-0">Thời lượng (phút)</label>
+                        <input type="number" class="form-control font-weight-bold" id="examDurationInput" value="@Model.DurationMinutes" min="1" max="300" />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="small text-muted font-weight-bold text-uppercase m-0">Tổng số câu hỏi</label>
+                        <div class="h5 m-0 font-weight-bold text-primary">@Model.TotalQuestions câu</div>
+                    </div>
+                    <div class="col-md-3 text-right">
+                        <label class="small text-muted font-weight-bold text-uppercase m-0 d-block">Trạng thái phát hành</label>
+                        @if (Model.IsPublished)
+                        {
+                            <span class="badge badge-success px-3 py-2 font-weight-bold" style="font-size:0.9rem;">
+                                <i class="fas fa-check-circle mr-1"></i> Đã xuất bản (Học viên thấy được)
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-warning px-3 py-2 font-weight-bold" style="font-size:0.9rem;">
+                                <i class="fas fa-pencil-alt mr-1"></i> Bản nháp (Đang rà soát)
+                            </span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Part Navigation Tabs -->
+        <ul class="nav nav-pills part-nav-pills mb-3" id="partTab" role="tablist">
+            @foreach (var part in Model.Parts.OrderBy(p => p.PartNumber))
+            {
+                var isFirst = part.PartNumber == 5;
+                <li class="nav-item">
+                    <a class="nav-link @(isFirst ? "active" : "")" id="part-@part.PartNumber-tab" data-toggle="pill" href="#part-@part.PartNumber" role="tab">
+                        <i class="fas fa-book-open mr-1"></i> Part @part.PartNumber (@part.StartNo - @part.EndNo)
+                    </a>
+                </li>
+            }
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="partTabContent">
+            @foreach (var part in Model.Parts.OrderBy(p => p.PartNumber))
+            {
+                var isFirst = part.PartNumber == 5;
+                <div class="tab-pane fade @(isFirst ? "show active" : "")" id="part-@part.PartNumber" role="tabpanel">
+                    
+                    @if (part.PartNumber == 5)
+                    {
+                        <!-- Part 5 Questions -->
+                        <div class="card shadow-sm border-0 mb-4" style="border-radius:12px;">
+                            <div class="card-header bg-light border-0 py-3 d-flex justify-content-between align-items-center">
+                                <h5 class="m-0 font-weight-bold text-dark">
+                                    Part 5: Hoàn thành câu (Incomplete Sentences - Câu 101 đến 130)
+                                </h5>
+                                <span class="badge badge-info">@part.Questions.Count câu hỏi</span>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted small mb-3">
+                                    <i class="fas fa-info-circle mr-1"></i> Rà soát lỗi chính tả trong đề bài và các lựa chọn đáp án. Đáp án đúng được tô màu xanh lá kèm thẻ [ANS].
+                                </p>
+
+                                @foreach (var q in part.Questions.OrderBy(q => q.QuestionNo))
+                                {
+                                    <div class="question-card" data-q-id="@q.Id">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="badge badge-primary font-weight-bold px-2 py-1" style="font-size:0.9rem;">
+                                                Câu @q.QuestionNo
+                                            </span>
+                                            <span class="badge badge-success px-2 py-1">
+                                                Đáp án chuẩn: <strong>[@q.CorrectAnswer]</strong>
+                                            </span>
+                                        </div>
+
+                                        <div class="form-group mb-3">
+                                            <label class="small text-muted font-weight-bold">Nội dung câu hỏi:</label>
+                                            <textarea class="form-control question-content-input" rows="2">@q.Content</textarea>
+                                        </div>
+
+                                        <div class="row">
+                                            @foreach (var opt in q.Options.OrderBy(o => o.Label))
+                                            {
+                                                var isCorrect = opt.Label == q.CorrectAnswer;
+                                                <div class="col-md-6 mb-2">
+                                                    <div class="option-item" data-opt-id="@opt.Id">
+                                                        <span class="option-badge @(isCorrect ? "option-badge-correct" : "option-badge-normal")">
+                                                            @opt.Label
+                                                        </span>
+                                                        <input type="text" class="form-control form-control-sm option-content-input @(isCorrect ? "border-success font-weight-bold" : "")" value="@opt.Content" />
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <!-- Part 6 & Part 7 Groups with Passages -->
+                        <div class="card shadow-sm border-0 mb-4" style="border-radius:12px;">
+                            <div class="card-header bg-light border-0 py-3 d-flex justify-content-between align-items-center">
+                                <h5 class="m-0 font-weight-bold text-dark">
+                                    Part @part.PartNumber: @(part.PartNumber == 6 ? "Hoàn thành đoạn văn (Text Completion - Câu 131 đến 146)" : "Đọc hiểu đoạn văn (Reading Comprehension - Câu 147 đến 200)")
+                                </h5>
+                                <span class="badge badge-info">@part.Groups.Count nhóm đoạn văn</span>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted small mb-3">
+                                    <i class="fas fa-info-circle mr-1"></i> Rà soát nội dung đoạn văn, kiểm tra xem hình ảnh chèn trong bài có hiển thị đúng và sắc nét hay không.
+                                </p>
+
+                                @foreach (var group in part.Groups.OrderBy(g => g.OrderIndex))
+                                {
+                                    <div class="border rounded p-3 mb-4 bg-white shadow-sm" data-group-id="@group.Id" style="border-left: 5px solid #007bff !important;">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <h6 class="font-weight-bold text-primary m-0">
+                                                <i class="fas fa-folder-open mr-1"></i> Nhóm câu hỏi @group.StartNo - @group.EndNo
+                                            </h6>
+                                            <span class="badge badge-light border">@group.Questions.Count câu hỏi</span>
+                                        </div>
+
+                                        <!-- Passages in this Group -->
+                                        @foreach (var passage in group.Passages.OrderBy(p => p.OrderIndex))
+                                        {
+                                            <div class="passage-box" data-passage-id="@passage.Id">
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <span class="font-weight-bold text-info">
+                                                        <i class="fas fa-align-left mr-1"></i> Đoạn văn bài đọc #@passage.OrderIndex
+                                                    </span>
+                                                    @if (!string.IsNullOrEmpty(passage.ImageUrl))
+                                                    {
+                                                        <span class="badge badge-success">
+                                                            <i class="fas fa-image mr-1"></i> Có hình ảnh đính kèm
+                                                        </span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge badge-secondary">Chỉ có văn bản</span>
+                                                    }
+                                                </div>
+
+                                                <!-- Image Review Section -->
+                                                @if (!string.IsNullOrEmpty(passage.ImageUrl))
+                                                {
+                                                    <div class="image-preview-container">
+                                                        <div class="small font-weight-bold text-primary mb-2">
+                                                            <i class="fas fa-check-circle mr-1"></i> Rà soát hình ảnh hiển thị của đoạn văn:
+                                                        </div>
+                                                        <a href="@passage.ImageUrl" target="_blank" title="Bấm để mở ảnh gốc">
+                                                            <img src="@passage.ImageUrl" alt="Hình ảnh đoạn văn TOEIC" />
+                                                        </a>
+                                                        <div class="small text-muted mt-2">
+                                                            Đường dẫn file: <code>@passage.ImageUrl</code> (Nhấp vào ảnh để xem kích thước đầy đủ)
+                                                        </div>
+                                                    </div>
+                                                }
+
+                                                <div class="form-group mb-0">
+                                                    <label class="small text-muted font-weight-bold">Nội dung văn bản đoạn văn (cho phép chỉnh sửa lỗi chính tả):</label>
+                                                    <textarea class="form-control passage-content-input" rows="6" style="line-height:1.6; font-size:14px;">@passage.Content</textarea>
+                                                </div>
+                                            </div>
+                                        }
+
+                                        <!-- Questions in this Group -->
+                                        <h6 class="font-weight-bold text-dark mt-3 mb-2">Các câu hỏi thuộc đoạn văn trên:</h6>
+                                        @foreach (var q in group.Questions.OrderBy(q => q.QuestionNo))
+                                        {
+                                            <div class="question-card" data-q-id="@q.Id">
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <span class="badge badge-primary font-weight-bold px-2 py-1" style="font-size:0.9rem;">
+                                                        Câu @q.QuestionNo
+                                                    </span>
+                                                    <span class="badge badge-success px-2 py-1">
+                                                        Đáp án chuẩn: <strong>[@q.CorrectAnswer]</strong>
+                                                    </span>
+                                                </div>
+
+                                                <div class="form-group mb-3">
+                                                    <label class="small text-muted font-weight-bold">Nội dung câu hỏi:</label>
+                                                    <textarea class="form-control question-content-input" rows="2">@q.Content</textarea>
+                                                </div>
+
+                                                <div class="row">
+                                                    @foreach (var opt in q.Options.OrderBy(o => o.Label))
+                                                    {
+                                                        var isCorrect = opt.Label == q.CorrectAnswer;
+                                                        <div class="col-md-6 mb-2">
+                                                            <div class="option-item" data-opt-id="@opt.Id">
+                                                                <span class="option-badge @(isCorrect ? "option-badge-correct" : "option-badge-normal")">
+                                                                    @opt.Label
+                                                                </span>
+                                                                <input type="text" class="form-control form-control-sm option-content-input @(isCorrect ? "border-success font-weight-bold" : "")" value="@opt.Content" />
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+@section scripts
+{
+    <script>
+        // Store current exam model in JS for fast JSON mutation and update
+        var examData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model, new System.Text.Json.JsonSerializerOptions { PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase }));
+
+        $(function () {
+            var partTabs = document.querySelectorAll('#partTab a[data-toggle="pill"]');
+
+            function activatePartTab(hash) {
+                var target = document.querySelector(hash);
+                if (!target || !target.classList.contains('tab-pane')) {
+                    return false;
+                }
+
+                partTabs.forEach(function (tab) {
+                    var isActive = tab.getAttribute('href') === hash;
+                    tab.classList.toggle('active', isActive);
+                    tab.setAttribute('aria-selected', String(isActive));
+                });
+                document.querySelectorAll('#partTabContent .tab-pane').forEach(function (pane) {
+                    var isActive = pane === target;
+                    pane.classList.toggle('active', isActive);
+                    pane.classList.toggle('show', isActive);
+                });
+                return true;
+            }
+
+            partTabs.forEach(function (tab) {
+                tab.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    var hash = tab.getAttribute('href');
+                    if (activatePartTab(hash) && window.location.hash !== hash) {
+                        window.history.replaceState(null, '', hash);
+                    }
+                });
+            });
+
+            if (window.location.hash) {
+                activatePartTab(window.location.hash);
+            }
+
+            // Save Changes button
+            $('#btnSaveExam').on('click', function () {
+                abp.ui.setBusy();
+
+                // 1. Collect updated title & duration
+                examData.title = $('#examTitleInput').val();
+                examData.durationMinutes = parseInt($('#examDurationInput').val(), 10) || 75;
+
+                // 2. Collect updated questions & options in Part 5
+                $('.question-card').each(function () {
+                    var card = $(this);
+                    var qId = parseInt(card.data('q-id'), 10);
+                    var newContent = card.find('.question-content-input').val();
+
+                    // Find in Part 5
+                    var part5 = examData.parts.find(p => p.partNumber === 5);
+                    if (part5 && part5.questions) {
+                        var qObj = part5.questions.find(q => q.id === qId);
+                        if (qObj) {
+                            qObj.content = newContent;
+                            card.find('.option-item').each(function () {
+                                var optItem = $(this);
+                                var optId = parseInt(optItem.data('opt-id'), 10);
+                                var optVal = optItem.find('.option-content-input').val();
+                                var optObj = qObj.options.find(o => o.id === optId);
+                                if (optObj) optObj.content = optVal;
+                            });
+                        }
+                    }
+
+                    // Find in Part 6 & 7
+                    examData.parts.forEach(p => {
+                        if (p.groups) {
+                            p.groups.forEach(g => {
+                                if (g.questions) {
+                                    var qObj = g.questions.find(q => q.id === qId);
+                                    if (qObj) {
+                                        qObj.content = newContent;
+                                        card.find('.option-item').each(function () {
+                                            var optItem = $(this);
+                                            var optId = parseInt(optItem.data('opt-id'), 10);
+                                            var optVal = optItem.find('.option-content-input').val();
+                                            var optObj = qObj.options.find(o => o.id === optId);
+                                            if (optObj) optObj.content = optVal;
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    });
+                });
+
+                // 3. Collect updated passages in Part 6 & 7
+                $('.passage-box').each(function () {
+                    var box = $(this);
+                    var passageId = parseInt(box.data('passage-id'), 10);
+                    var newPassageContent = box.find('.passage-content-input').val();
+
+                    examData.parts.forEach(p => {
+                        if (p.groups) {
+                            p.groups.forEach(g => {
+                                if (g.passages) {
+                                    var passObj = g.passages.find(pass => pass.id === passageId);
+                                    if (passObj) {
+                                        passObj.content = newPassageContent;
+                                    }
+                                }
+                            });
+                        }
+                    });
+                });
+
+                // 4. Send update request
+                $.ajax({
+                    url: '@Url.Action("Update", "Exams")',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(examData),
+                    success: function (res) {
+                        abp.ui.clearBusy();
+                        var result = res && res.result ? res.result : res;
+                        if (result && result.success) {
+                            abp.notify.success('Đã lưu các chỉnh sửa chính tả và nội dung thành công!');
+                        } else {
+                            abp.message.error(result && result.message || 'Lỗi khi lưu đề thi.');
+                        }
+                    },
+                    error: function (xhr) {
+                        abp.ui.clearBusy();
+                        abp.message.error('Lỗi khi gửi yêu cầu lưu đề.');
+                    }
+                });
+            });
+
+            // Toggle Publish button
+            $('#btnPublishToggle').on('click', function () {
+                var btn = $(this);
+                var isCurrentlyPublished = btn.data('published') === true || btn.data('published') === 'true';
+                var nextState = !isCurrentlyPublished;
+                var actionText = nextState ? 'xuất bản' : 'gỡ xuất bản';
+
+                abp.message.confirm('Bạn có chắc chắn muốn ' + actionText + ' đề thi này?', 'Xác nhận', function (isConfirmed) {
+                    if (isConfirmed) {
+                        abp.ui.setBusy();
+                        $.ajax({
+                            url: '@Url.Action("SetPublished", "Exams")',
+                            type: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify({ id: examData.id, isPublished: nextState }),
+                            success: function (res) {
+                                abp.ui.clearBusy();
+                                var result = res && res.result ? res.result : res;
+                                if (result && result.success && result.isPublished === nextState) {
+                                    abp.notify.success('Cập nhật trạng thái phát hành thành công!');
+                                    setTimeout(function () { location.reload(); }, 600);
+                                } else {
+                                    abp.message.error(result && result.message || 'Không thể thay đổi trạng thái.');
+                                }
+                            },
+                            error: function (xhr) {
+                                abp.ui.clearBusy();
+                                abp.message.error('Lỗi khi gửi yêu cầu lên server.');
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+}
